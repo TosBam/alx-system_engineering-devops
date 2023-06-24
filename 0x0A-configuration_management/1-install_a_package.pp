@@ -1,3 +1,4 @@
+#!/usr/bin/pup
 # Installing a package
 
 package {'flask':
