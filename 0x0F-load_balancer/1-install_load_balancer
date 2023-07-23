@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Configure Nginx so that its HTTP response contains a custom header
-
 sudo apt-get update
-sudo apt-get -y install haproxy
+sudo apt-get install -y haproxy
 
 echo "ENABLED=1" >> /etc/default/haproxy
-mv /etc/haproxy/haproxy.cfg(,.original)
-touch /etc/haproxy/haproxy.cfg
+#mv /etc/haproxy/haproxy.cfg
 
-
-printf %s "global
-        log 127.0.0.1 local0 notice
-        maxconn 2000
+cat << EOF | sudo tee /etc/haproxy/haproxy.cfg
+global
+        log /dev/log    local0                                  log /dev/log    local1 notice
+        chroot /var/lib/haproxy
+        stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+        stats timeout 30s
         user haproxy
-        group haproxy
+        group haproxy                                           daemon
 
 defaults
         log     global
@@ -43,7 +43,8 @@ backend webservers
         server 183243-web-01 54.89.59.226:80 check
         server 183243-web-02 54.242.158.33:80 check
 
-" >> /etc/haproxy/haproxy.cfg
+EOF
 
 sudo systemctl enable haproxy
-sudo service haproxy restart
+
+sudo systemctl start haproxy
