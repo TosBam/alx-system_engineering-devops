@@ -1,1 +1,1 @@
-To be updated soon
+Series of api functions querying reddit.com
